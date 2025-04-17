@@ -3,10 +3,23 @@ const db = require('../dataBase/connection');
 module.exports = {
     async listarLivros(request, response) {
         try {
+            const sql = `
+            SELECT
+                livro_id, livro_titulo, livro_sinopse, livro_editora,
+                 livro_isbn, livro_ano, livro_classidd, livro_foto 
+            FROM livros;
+
+        `;
+
+        const [rows] = await db.query(sql);
+
+        const nRegistros = rows.length;
+
             return response.status(200).json({
                 sucesso: true, 
                 mensagem: 'Lista de Livros', 
-                dados: null
+                nRegistros,
+                dados: rows
             });
         } catch (error) {
             return response.status(500).json({
