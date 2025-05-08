@@ -31,6 +31,32 @@ module.exports = {
     }, 
     async cadastrarLivros(request, response) {
         try {
+            const {livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto} = request.bory;
+            
+            // introdução SQL
+            const sql = `
+                INSERT INTO livros 
+                    (livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto)
+                VALUES 
+                    (?, ?, ?, ?, ?, ?, ?);
+                `;
+            //definição dos dados a serem colocados no array
+            const values = [livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto];
+
+            // execução da instrução sql passando os parâmetros
+            const [result] =  await db.query( sql, values);
+
+            //identificaçaõ do ID do registro inserido
+            const dados = {
+                livro_titulo,
+                livro_sinopse,
+                livro_editora,
+                livro_isbn,
+                livro_ano,
+                livro_classidd,
+                livro_foto
+            };
+            
             return response.status(200).json({
                 sucesso: true, 
                 mensagem: 'Cadastro de livros', 

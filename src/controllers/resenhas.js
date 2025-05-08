@@ -3,14 +3,29 @@ const db = require('../dataBase/connection');
 module.exports = {
     async listarResenhas(request, response) {
         try {
-
+            const {res_id, livro_id, resenha_titulo, resenha_texto, resenha_status, resenha_avaliacao} = request.bory;
+            
             const sql = `
-                SELECT 
-                    resenha_id,res_id,livro_id, resenha_titulo,
-                        resenha_texto,resenha_status,resenha_avaliacao,
-                    resenha_dtpublicacao,resenha_dtatualizacao 
-                FROM resenhas;
+                INSERT INTO RESENHAS 
+                    ( res_id, livro_id, resenha_titulo, resenha_texto, resenha_status, resenha_avaliacao)
+                VALUES
+                    (?, ?, ?, ?, ?, ?)
             `;
+            //definição dos dados a serem colocados no array
+            const values = [res_id, livro_id, resenha_titulo, resenha_texto, resenha_status, resenha_avaliacao];
+
+            // execução da instrução sql passando os parâmetros
+            const [result] =  await db.query( sql, values);
+
+            //identificaçaõ do ID do registro inserido
+            const dados = {
+                res_id,
+                livro_id,
+                resenha_titulo,
+                resenha_texto,
+                resenha_status,
+                resenha_avaliacao
+            };
 
             const [rows] = await db.query(sql);
 
