@@ -31,7 +31,7 @@ module.exports = {
     }, 
     async cadastrarLivros(request, response) {
         try {
-            const {livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto} = request.bory;
+            const {titulo, sinopse, editora, isbn, ano, idd, foto} = request.body;
             
             // introdução SQL
             const sql = `
@@ -41,26 +41,27 @@ module.exports = {
                     (?, ?, ?, ?, ?, ?, ?);
                 `;
             //definição dos dados a serem colocados no array
-            const values = [livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto];
+            const values = [titulo, sinopse, editora, isbn, ano, idd, foto];
 
             // execução da instrução sql passando os parâmetros
             const [result] =  await db.query( sql, values);
 
             //identificaçaõ do ID do registro inserido
             const dados = {
-                livro_titulo,
-                livro_sinopse,
-                livro_editora,
-                livro_isbn,
-                livro_ano,
-                livro_classidd,
-                livro_foto
+                id:result.insertId,
+                titulo,
+                sinopse,
+                editora,
+                isbn,
+                ano,
+                idd,
+                foto
             };
             
             return response.status(200).json({
                 sucesso: true, 
-                mensagem: 'Cadastro de livros', 
-                dados: null
+                mensagem: 'Cadastro de livros',     
+                dados: dados
             });
         } catch (error) {
             return response.status(500).json({
@@ -75,7 +76,7 @@ module.exports = {
             return response.status(200).json({
                 sucesso: true, 
                 mensagem: 'Alteração no cadastro de livros', 
-                dados: null
+                dados: dados
             });
         } catch (error) {
             return response.status(500).json({
