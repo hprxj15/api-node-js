@@ -7,7 +7,7 @@ const ResenhasController = require('../controllers/resenhas');
 router.get('/livros', LivrosController.listarLivros); 
 router.post('/livros', LivrosController.cadastrarLivros); 
 router.patch('/livros/:id', LivrosController.editarLivros); 
-router.delete('/livros', LivrosController.apagarLivros); 
+router.delete('/livros/:id', LivrosController.apagarLivros); 
 
 router.get('/resenhas', ResenhasController.listarResenhas); 
 router.post('/resenhas', ResenhasController.cadastrarResenhas); 
