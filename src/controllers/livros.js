@@ -1,104 +1,133 @@
-const db = require('../dataBase/connection'); 
+const db = require('../dataBase/connection');
 
 module.exports = {
     async listarLivros(request, response) {
         try {
+
             const sql = `
-            SELECT
-                livro_id, livro_titulo, livro_sinopse, livro_editora,
-                 livro_isbn, livro_ano, livro_classidd, livro_foto 
-            FROM livros;
+                SELECT livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto
+                FROM livros;
+                        `;
 
-        `;
+            const [rows] = await db.query(sql);
 
-        const [rows] = await db.query(sql);
-
-        const nRegistros = rows.length;
+            const nRegistros = rows.length;
 
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Lista de Livros', 
+                sucesso: true,
+                mensagem: 'Lista de livros',
                 nRegistros,
                 dados: rows
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
+    },
     async cadastrarLivros(request, response) {
         try {
-            const {titulo, sinopse, editora, isbn, ano, idd, foto} = request.body;
-            
-            // introdução SQL
+
+            const { livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto } = request.body;
+
             const sql = `
-                INSERT INTO livros 
-                    (livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto)
-                VALUES 
-                    (?, ?, ?, ?, ?, ?, ?);
-                `;
-            //definição dos dados a serem colocados no array
-            const values = [titulo, sinopse, editora, isbn, ano, idd, foto];
+                INSERT INTO Livros (livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto)
+                VALUES (?,?,?,?,?,?,?)`;
 
-            // execução da instrução sql passando os parâmetros
-            const [result] =  await db.query( sql, values);
 
-            //identificaçaõ do ID do registro inserido
+            const values = [livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto];
+
+            const [result] = await db.query(sql, values);
+
             const dados = {
-                id:result.insertId,
-                titulo,
-                sinopse,
-                editora,
-                isbn,
-                ano,
-                idd,
-                foto
+                id: result.insertId,
+                livro_titulo,
+                livro_sinopse, 
+                livro_editora, 
+                livro_isbn, 
+                livro_ano, 
+                livro_classidd, 
+                livro_foto,
+
             };
-            
+
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Cadastro de livros',     
+                sucesso: true,
+                mensagem: 'Cadastro de livro',
                 dados: dados
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
+    },
     async editarLivros(request, response) {
         try {
+
+            const { livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto } = request.body;
+            const { id } = request.params;
+            const sql = `
+            
+
+            UPDATE Livros SET
+livro_titulo=?, livro_sinopse=?, livro_editora=?, livro_isbn=?, livro_ano=?, livro_classidd=?, livro_foto=?
+WHERE livro_id=?
+
+            
+`;
+
+            const values = [livro_titulo, livro_sinopse, livro_editora, livro_isbn, livro_ano, livro_classidd, livro_foto, id];
+            const [result] = await db.query(sql, values);
+
+            if (result.affectedRows === 0) {
+                return response.status(404).json({
+                    sucesso: false,
+                    mensagem: `Livro ${id} não encontrada!`,
+                    dados: null
+                });
+            }
+
+            const dados = {
+                livro_titulo,
+                livro_sinopse, 
+                livro_editora, 
+                livro_isbn, 
+                livro_ano, 
+                livro_classidd, 
+                livro_foto,
+            };
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Alteração no cadastro de livros', 
-                dados: dados
+                sucesso: true,
+                mensagem: `Livro ${id} atualizada com sucesso!`,
+                dados
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
+    },
     async apagarLivros(request, response) {
         try {
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Exclusão de livro', 
+                sucesso: true,
+                mensagem: 'Exclusão de livro',
                 dados: null
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
-};  
+    },
+};
+

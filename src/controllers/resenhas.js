@@ -1,74 +1,60 @@
-const db = require('../dataBase/connection'); 
+const db = require('../dataBase/connection');
 
 module.exports = {
     async listarResenhas(request, response) {
         try {
-            const {res_id, livro_id, titulo, texto, status, avaliacao} = request.body;
-            
+
             const sql = `
-                INSERT INTO RESENHAS 
-                    ( res_id, livro_id, resenha_titulo, resenha_texto, resenha_status, resenha_avaliacao)
-                VALUES
-                    (?, ?, ?, ?, ?, ?)
-            `;
-            //definição dos dados a serem colocados no array
-            const values = [res_id, livro_id, titulo, texto, status, avaliacao];
+         SELECT resenha_id,res_id,livro_id, resenha_titulo,resenha_texto,resenha_status,resenha_avaliacao,resenha_dtpublicacao,resenha_dtatualizacao FROM resenhas;
 
-            // execução da instrução sql passando os parâmetros
-            const [result] =  await db.query( sql, values);
 
-            //identificaçaõ do ID do registro inserido
-            const dados = {
-                res_id,
-                livro_id,
-                titulo,
-                texto,
-                status,
-                avaliacao
-            };            
+      `;
 
             const [rows] = await db.query(sql);
 
+            const nRegistros = rows.length;
+
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Lista de resenhas', 
-                dados: dados
+                sucesso: true,
+                mensagem: 'Lista de resenhas',
+                nRegistros,
+                dados: rows
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
+    },
     async cadastrarResenhas(request, response) {
         try {
-            const { livro_id, titulo, texto, status, avaliacao } = request.body;
+
+            const { res_id, livro_id, titulo, texto, avaliacao } = request.body;
 
             const sql = `
-                INSERT INTO RESENHAS 
-                    (livro_id, resenha_titulo, resenha_texto, resenha_status, resenha_avaliacao)
-                VALUES 
-                    (?, ?, ?, ?, ?)
-            `;
+           INSERT INTO resenhas (res_id, livro_id, resenha_titulo, resenha_texto,resenha_avaliacao)
+            VALUES (?,?,?,?,?)`;
 
-            const values = [livro_id, titulo, texto, status, avaliacao];
+
+            const values = [res_id, livro_id, titulo, texto, avaliacao];
 
             const [result] = await db.query(sql, values);
 
             const dados = {
-                res_id: result.insertId,
+                id: result.insertId,
+                res_id,
                 livro_id,
                 titulo,
                 texto,
-                status,
                 avaliacao
+
             };
 
-            return response.status(201).json({
+            return response.status(200).json({
                 sucesso: true,
-                mensagem: 'Resenha cadastrada com sucesso!',
+                mensagem: 'Cadastro de resenha',
                 dados: dados
             });
         } catch (error) {
@@ -78,70 +64,68 @@ module.exports = {
                 dados: error.message
             });
         }
-    }, 
+    },
     async editarResenhas(request, response) {
         try {
-                //Parametros recebidos pelo corpo da requisição
-                const { res_id, livro_id, titulo, texto, status, avaliacao } = request.body;
-                //parametros recebidos pera URL via params ex: /usuario/1
-                const {id} = request.params;
-                //introduçaõ sql
-                const sql = `
-                    UPDATE RESENHAS SET
-                        livro_id = ?, resenha_titulo = ?, resenha_texto = ?, resenha_status = ?, resenha_avaliacao = ?
-                    WHERE
-                        res_id = ?
-                `;
-    
-                // preparo do array com dados que serão atualizados
-                const values = [res_id, livro_id, titulo, texto, status, avaliacao];
-                // execução e obtenção de confirmação da atualização realizada
-                const [result] = await db.query(sql, values);
+
+            const { res_id, livro_id, titulo, texto, avaliacao } = request.body;
+            const { id } = request.params;
+            const sql = `
+            
+
+            UPDATE resenhas SET
+           res_id=?,livro_id=?, resenha_titulo=?,resenha_texto=?,resenha_avaliacao=?
+            WHERE resenha_id=?
+
+            
+`;
+
+            const values = [res_id, livro_id, titulo, texto, avaliacao, id];
+            const [result] = await db.query(sql, values);
 
             if (result.affectedRows === 0) {
                 return response.status(404).json({
                     sucesso: false,
-                    mensagem: `Resenha ${res_id} não encontrada.`,
+                    mensagem: `resenha ${id} não encontrada!`,
                     dados: null
-                })
-                }
-                
-                const dados = {
-                    res_id,
-                    livro_id,
-                    titulo,
-                    texto,
-                    status,
-                    avaliacao
-                };
-                
-                return response.status(200).json({
-                    sucesso: true,
-                    mensagem: 'Cadastro de resenhas atualizado com sucesso!',
-                    dados: dados
                 });
-                
+            }
+
+            const dados = {
+                res_id,
+                livro_id,
+                titulo,
+                texto,
+
+                avaliacao, id
+            };
+            return response.status(200).json({
+                sucesso: true,
+                mensagem: `resenha ${id} atualizada com sucesso!`,
+                dados
+            });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
+    },
     async apagarResenhas(request, response) {
         try {
             return response.status(200).json({
-                sucesso: true, 
-                mensagem: 'Exclusão de resenhas', 
+                sucesso: true,
+                mensagem: 'Exclusão de resenha',
                 dados: null
             });
         } catch (error) {
             return response.status(500).json({
-                sucesso: false, 
-                mensagem: 'Erro na requisição.', 
+                sucesso: false,
+                mensagem: 'Erro na requisição.',
                 dados: error.message
             });
         }
-    }, 
-};  
+    },
+};
+
