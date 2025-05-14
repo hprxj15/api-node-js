@@ -12,6 +12,6 @@ router.delete('/livros/:id', LivrosController.apagarLivros);
 router.get('/resenhas', ResenhasController.listarResenhas); 
 router.post('/resenhas', ResenhasController.cadastrarResenhas); 
 router.patch('/resenhas/:id', ResenhasController.editarResenhas); 
-router.delete('/resenhas', ResenhasController.apagarResenhas); 
+router.delete('/resenhas/:id', ResenhasController.apagarResenhas); 
 
 module.exports = router;

@@ -114,17 +114,33 @@ module.exports = {
     },
     async apagarResenhas(request, response) {
         try {
-            return response.status(200).json({
-                sucesso: true,
-                mensagem: 'Exclusão de resenha',
-                dados: null
-            });
-        } catch (error) {
-            return response.status(500).json({
-                sucesso: false,
-                mensagem: 'Erro na requisição.',
-                dados: error.message
-            });
+                //parâmetro passado via url na chamada da api pelo front-end  
+                const {id} = request.params;
+                //comando de exclusão
+                const sql = `DELETE from resenhas WHERE resenhas_id = ?`;
+                // array com parametros de exclusao
+                const values = [id];
+                //executa instruçoes no banco de dados
+                const [result] = await db.query(sql, values)
+    
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({
+                        sucesso: false,
+                        mensagem: `Resenha ${id} não encontrado`,
+                        dados: null
+                    });
+                }
+                return response.status(200).json({
+                    sucesso: true,
+                    mensagem: `Exclusão de ${id} realizada com sucesso`,
+                    dados: null
+                });
+            } catch (error) {
+                return response.status(500).json({
+                    sucesso: false,
+                    mensagem: 'Erro na requisição.',
+                    dados: error.message
+                });
         }
     },
 };
