@@ -116,22 +116,22 @@ WHERE livro_id=?
     },
     async apagarLivros(request, response) {
         try {
-            const { id } = request.params;
+            const { livros_id } = request.params;
             const sql = `DELETE FROM livros WHERE livro_id = ?`;
-            const values = [id];
+            const values = [livros_id];
             const [result] = await db.query(sql, values);
     
             if (result.affectedRows === 0) {
                 return response.status(404).json({
                     sucesso: false,
-                    mensagem: `Livro ${id} não encontrado`,
+                    mensagem: `Livro ${livros_id} não encontrado`,
                     dados: null
                 });
             }
     
             return response.status(200).json({
                 sucesso: true,
-                mensagem: `Exclusão de ${id} realizada com sucesso`,
+                mensagem: `Exclusão de ${livros_id} realizada com sucesso`,
                 dados: null
             });
         } catch (error) {

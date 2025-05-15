@@ -117,7 +117,7 @@ module.exports = {
                 //parâmetro passado via url na chamada da api pelo front-end  
                 const {id} = request.params;
                 //comando de exclusão
-                const sql = `DELETE from resenhas WHERE resenhas_id = ?`;
+                const sql = `DELETE from resenhas WHERE resenha_id = ?`;
                 // array com parametros de exclusao
                 const values = [id];
                 //executa instruçoes no banco de dados
